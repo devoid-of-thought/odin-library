@@ -1,5 +1,5 @@
 // Add your JavaScript code here
-let myLibrary = [{id: 1, title: "The Wandering inn Volume 1", author: "Pirateaba", pages: 1362, read: true}];
+let myLibrary = [new Book("The Wandering Inn Volume 1", "Pirateaba", 1362, true)];
 
 function Book(title, author, pages, read) {
     this.id = crypto.randomUUID();
@@ -15,6 +15,10 @@ function addBookToLibrary(title,author,pages,read) {
   myLibrary.push(newBook);
 }
 
+Book.prototype.toggleRead = function() {
+  this.read = !this.read;
+}
+
 function displayBooks() {
   const bookList = document.getElementById('book-table-body');
   bookList.innerHTML = '';
@@ -25,10 +29,13 @@ function displayBooks() {
       <td>${book.author}</td>
       <td>${book.pages}</td>
       <td>${book.read ? 'Yes' : 'No'}</td>
+      <td><button class="toggle-read-btn" data-id="${book.id}">${book.read ? 'Mark as Unread' : 'Mark as Read'}</button></td>
+      <td><button class="delete-btn" data-id="${book.id}">Delete</button></td>
     `;
     bookList.appendChild(bookItem);
   });
 }
+
 const addBookButton = document.getElementById('add-book-btn');
 const bookDialog = document.getElementById('book-dialog');
 const bookForm = document.getElementById('book-form');
@@ -48,4 +55,21 @@ bookForm.addEventListener('submit', (e) => {
   displayBooks();
 });
 
+let updateButtons = document.getElementsByClassName('toggle-read-btn');
+let deleteButtons = document.getElementsByClassName('delete-btn');
+const bookTableBody = document.getElementById('book-table-body');
+bookTableBody.addEventListener('click', (e) => {
+  if (e.target.classList.contains('toggle-read-btn')) {
+    const bookId = e.target.getAttribute('data-id');
+    const book = myLibrary.find(b => b.id === bookId);
+    if (book) {
+      book.toggleRead();
+      displayBooks();
+    }
+  } else if (e.target.classList.contains('delete-btn')) {
+    const bookId = e.target.getAttribute('data-id');
+    myLibrary = myLibrary.filter(b => b.id !== bookId);
+    displayBooks();
+  } 
+});
 displayBooks();
