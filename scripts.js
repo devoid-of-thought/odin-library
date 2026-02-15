@@ -21,7 +21,6 @@ function displayBooks() {
   myLibrary.forEach(book => {
     const bookItem = document.createElement('tr');
     bookItem.innerHTML = `
-      <td>${book.id}</td>
       <td>${book.title}</td>
       <td>${book.author}</td>
       <td>${book.pages}</td>
@@ -30,4 +29,23 @@ function displayBooks() {
     bookList.appendChild(bookItem);
   });
 }
+const addBookButton = document.getElementById('add-book-btn');
+const bookDialog = document.getElementById('book-dialog');
+const bookForm = document.getElementById('book-form');
+
+addBookButton.addEventListener('click', () => {
+  bookDialog.showModal();
+});
+
+bookForm.addEventListener('submit', (e) => {
+  e.preventDefault();
+  const title = document.getElementById('title').value;
+  const author = document.getElementById('author').value;
+  const pages = parseInt(document.getElementById('pages').value);
+  const read = document.getElementById('read').checked;
+  addBookToLibrary(title, author, pages, read);
+  bookDialog.close();
+  displayBooks();
+});
+
 displayBooks();
