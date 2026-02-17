@@ -1,40 +1,48 @@
 // Add your JavaScript code here
-let myLibrary = [new Book("The Wandering Inn Volume 1", "Pirateaba", 1362, true)];
 
-function Book(title, author, pages, read) {
+class Book {
+  constructor(title, author, pages, read) {
     this.id = crypto.randomUUID();
     this.title = title;
     this.author = author;
     this.pages = pages;
     this.read = read;
-  
+  }
+  toggleRead() {
+    this.read = !this.read;
+  }
 }
 
-function addBookToLibrary(title,author,pages,read) {
-  const newBook = new Book(title,author,pages,read);
-  myLibrary.push(newBook);
+class myLibrary {
+  constructor() {
+    this.books = [];
+  }
+  addBookToLibrary(title, author, pages, read) {
+    const newBook = new Book(title, author, pages, read);
+    this.books.push(newBook);
+  }
+  displayBooks(id) {
+    const bookList = document.getElementById(id);
+    bookList.innerHTML = '';
+    this.books.forEach(book => {
+      const bookItem = document.createElement('tr');
+      bookItem.innerHTML = `
+        <td>${book.title}</td>
+        <td>${book.author}</td>
+        <td>${book.pages}</td>
+        <td>${book.read ? 'Yes' : 'No'}</td>
+        <td><button class="toggle-read-btn" data-id="${book.id}">${book.read ? 'Mark as Unread' : 'Mark as Read'}</button></td>
+        <td><button class="delete-btn" data-id="${book.id}">Delete</button></td>
+      `;
+      bookList.appendChild(bookItem);
+    });
+  }
 }
 
-Book.prototype.toggleRead = function() {
-  this.read = !this.read;
-}
+myLib = new myLibrary();
 
-function displayBooks() {
-  const bookList = document.getElementById('book-table-body');
-  bookList.innerHTML = '';
-  myLibrary.forEach(book => {
-    const bookItem = document.createElement('tr');
-    bookItem.innerHTML = `
-      <td>${book.title}</td>
-      <td>${book.author}</td>
-      <td>${book.pages}</td>
-      <td>${book.read ? 'Yes' : 'No'}</td>
-      <td><button class="toggle-read-btn" data-id="${book.id}">${book.read ? 'Mark as Unread' : 'Mark as Read'}</button></td>
-      <td><button class="delete-btn" data-id="${book.id}">Delete</button></td>
-    `;
-    bookList.appendChild(bookItem);
-  });
-}
+let wanderingInn = new Book("The Wandering Inn Volume 1", "Pirateaba", 1362, true);
+myLib.addBookToLibrary(wanderingInn.title, wanderingInn.author, wanderingInn.pages, wanderingInn.read);
 
 const addBookButton = document.getElementById('add-book-btn');
 const bookDialog = document.getElementById('book-dialog');
@@ -50,9 +58,9 @@ bookForm.addEventListener('submit', (e) => {
   const author = document.getElementById('author').value;
   const pages = parseInt(document.getElementById('pages').value);
   const read = document.getElementById('read').checked;
-  addBookToLibrary(title, author, pages, read);
+  myLib.addBookToLibrary(title, author, pages, read);
   bookDialog.close();
-  displayBooks();
+  myLib.displayBooks("book-table-body");
 });
 
 let updateButtons = document.getElementsByClassName('toggle-read-btn');
@@ -61,15 +69,16 @@ const bookTableBody = document.getElementById('book-table-body');
 bookTableBody.addEventListener('click', (e) => {
   if (e.target.classList.contains('toggle-read-btn')) {
     const bookId = e.target.getAttribute('data-id');
-    const book = myLibrary.find(b => b.id === bookId);
+    const book = myLib.books.find(b => b.id === bookId);
     if (book) {
       book.toggleRead();
-      displayBooks();
+      myLib.displayBooks("book-table-body");
     }
   } else if (e.target.classList.contains('delete-btn')) {
     const bookId = e.target.getAttribute('data-id');
-    myLibrary = myLibrary.filter(b => b.id !== bookId);
-    displayBooks();
+    myLib.books = myLib.books.filter(b => b.id !== bookId);
+    myLib.displayBooks("book-table-body");
   } 
 });
-displayBooks();
+
+myLib.displayBooks("book-table-body");
