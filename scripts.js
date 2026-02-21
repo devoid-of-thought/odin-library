@@ -54,13 +54,36 @@ addBookButton.addEventListener('click', () => {
 
 bookForm.addEventListener('submit', (e) => {
   e.preventDefault();
-  const title = document.getElementById('title').value;
-  const author = document.getElementById('author').value;
-  const pages = parseInt(document.getElementById('pages').value);
+  const titleInpt = document.getElementById('title');
+  const authorInpt = document.getElementById('author');
+  const pagesInpt = document.getElementById('pages');
   const read = document.getElementById('read').checked;
-  myLib.addBookToLibrary(title, author, pages, read);
+
+  titleInpt.setCustomValidity("");
+  authorInpt.setCustomValidity("");
+  pagesInpt.setCustomValidity("");
+
+  if (titleInpt.value.trim() === "") {  
+    titleInpt.setCustomValidity("Please enter a title.");
+    titleInpt.reportValidity();
+    return;
+  }
+  if (authorInpt.value.trim() === "") {
+    authorInpt.setCustomValidity("Please enter an author.");
+    authorInpt.reportValidity();
+    return;
+  }
+  if (isNaN(pagesInpt.value) || parseInt(pagesInpt.value) <= 0) {
+    pagesInpt.setCustomValidity("Please enter a valid number of pages.");
+    pagesInpt.reportValidity(); 
+    return;
+  }
+
+
+  myLib.addBookToLibrary(titleInpt.value.trim(), authorInpt.value.trim(), parseInt(pagesInpt.value), read);
   bookDialog.close();
   myLib.displayBooks("book-table-body");
+
 });
 
 let updateButtons = document.getElementsByClassName('toggle-read-btn');
